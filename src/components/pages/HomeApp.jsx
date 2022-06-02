@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import CardHome from "../cards/CardHome";
 import NavbarApp from "../navbar/NavbarApp";
 import { useQuery, gql } from "@apollo/client";
@@ -20,7 +20,6 @@ export default function HomeApp() {
     if (data) {
       setBookss(data.books);
       setCateg(dataCategories.categories);
-      console.log(dataCategories);
     }
   }, [data]);
   return (
@@ -66,10 +65,16 @@ export default function HomeApp() {
           List Book
         </p>
         <input
-          className="flex-1 p-2 border-2 border-violet-500 rounded w-full"
+          className="flex-1 p-2 border-2 border-violet-500 rounded w-full mr-1"
           type="text"
           placeholder="Search..."
         />
+        <button
+          className="text-white font-bold border border-white hover:bg-violet-400 active:bg-gradient-to-r from-violet-300 to-fuchsia-500 px-3 py-2 rounded "
+          type="button"
+        >
+          Search
+        </button>
       </div>
 
       <div className="container mx-auto py-2">

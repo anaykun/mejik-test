@@ -1,17 +1,19 @@
-import React, { useState, useEffect } from "react";
+import react, { useState, useContext, useEffect } from "react";
 import { useMutation } from "@apollo/client";
-import { REGISTER } from "../../GraphQL/Mutation";
+import { LOGIN } from "../../GraphQL/Mutation";
+import { UserContext } from "../../context/useContext";
+import { AContext } from "../../context/useModal";
 
-const Register = ({ switching, switOff }) => {
+const Login = ({ switchings, switOff }) => {
+  const [state, dispatch] = useContext(UserContext);
+  const [states, dispatchs] = useContext(AContext);
   const [message, setMessage] = useState("");
   const [form, setForm] = useState({
-    firstName: "",
-    lastName: "",
     email: "",
     password: "",
   });
 
-  const [register, { data, loading, error }] = useMutation(REGISTER);
+  const [login, { loading, data, error }] = useMutation(LOGIN);
 
   const handleChange = (e) => {
     setForm({
@@ -22,45 +24,49 @@ const Register = ({ switching, switOff }) => {
   useEffect(() => {
     if (data) {
       console.log(data);
+      const user = data.login;
+      dispatch({
+        type: "LOGIN_SUCCESS",
+        payload: user,
+      });
+      switOff();
     }
   }, [data]);
+
   const handleSubmit = (e) => {
     try {
       e.preventDefault();
-      register({
+
+      login({
         variables: {
           input: form,
         },
       });
+
       if (error) {
         setMessage(
           <div className="text-center w-full bg-red-500 mb-2 rounded">
-            Register Failed!
+            Login Failed!
           </div>
         );
       } else {
         setMessage(
           <div className="text-center w-full bg-green-500 mb-2 rounded">
-            Register Success!
+            Login Success!
           </div>
         );
-        setForm({
-          firstName: "",
-          lastName: "",
-          email: "",
-          password: "",
-        });
+        console.log(data);
       }
-      console.log(data);
     } catch (error) {
       console.log(error);
       setMessage(
         <div className="text-center w-full bg-red-500 mb-2 rounded">
-          Register Failed!
+          Login Failed!
         </div>
       );
     }
   };
+
   return (
     <div className="">
       <div className="fixed  insert-0 ">
@@ -70,7 +76,7 @@ const Register = ({ switching, switOff }) => {
             style={{ width: "500px" }}
           >
             <div className="flex  mb-2 text-lg justify-between">
-              <p>Register</p>
+              <p>Login</p>
               <p onClick={() => switOff()} className="cursor-pointer">
                 X
               </p>
@@ -78,22 +84,6 @@ const Register = ({ switching, switOff }) => {
             {message && message}
             <form onSubmit={handleSubmit}>
               <div className="flex flex-col ">
-                <input
-                  className="p-2 rounded text-violet-500 mb-2 font-bold"
-                  type="text"
-                  name="firstName"
-                  value={form.firstName}
-                  placeholder="First Name ..."
-                  onChange={handleChange}
-                />
-                <input
-                  className="p-2 rounded text-violet-500 mb-2 font-bold"
-                  type="text"
-                  name="lastName"
-                  value={form.lastName}
-                  placeholder="Last Name ..."
-                  onChange={handleChange}
-                />
                 <input
                   className="p-2 rounded text-violet-500 mb-2 font-bold"
                   type="email"
@@ -111,15 +101,16 @@ const Register = ({ switching, switOff }) => {
                   onChange={handleChange}
                 />
                 <button className="font-bold w-full bg-violet-500 py-2 rounded hover:bg-violet-900 mb-2">
-                  Register
+                  Login
                 </button>
               </div>
             </form>
+
             <div className="flex">
               <label className="text-center w-full">
-                Already have an account ? Click{" "}
+                Don't Have Account ? Click{" "}
                 <span
-                  onClick={() => switching(true)}
+                  onClick={() => switchings()}
                   className="cursor-pointer hover:tracking-widest"
                 >
                   Here
@@ -133,4 +124,4 @@ const Register = ({ switching, switOff }) => {
   );
 };
 
-export default Register;
+export default Login;
